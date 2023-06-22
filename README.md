@@ -25,8 +25,9 @@ None
 None
 
 ## GraphQL Queries
-* control
-* control_str: full text search on Diagnosis code + name
+
+* `control`
+* `control_str`: full text search on Control name, usage, and adjustability
 
 ## GraphQL Mutations - each mutation emits default signals and return standard error lists (cfr. openimis-be-core_py)
 

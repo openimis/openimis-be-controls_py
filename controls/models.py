@@ -1,5 +1,4 @@
 from django.db import models
-from django.db import models
 
 # Create your models here.
 class Control(models.Model):
@@ -18,7 +17,7 @@ class Control(models.Model):
 
     @classmethod
     def get_queryset(cls, queryset, user):
-        queryset = Diagnosis.filter_queryset(queryset)
+        queryset = Control.filter_queryset(queryset)
         # GraphQL calls with an info object while Rest calls with the user itself
         if isinstance(user, ResolveInfo):
             user = user.context.user
