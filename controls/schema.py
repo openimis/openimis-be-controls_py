@@ -1,4 +1,6 @@
 import graphene
+from django.db.models import Q
+
 from core import ExtendedConnection
 from graphene_django import DjangoObjectType
 from graphene_django.filter import DjangoFilterConnectionField

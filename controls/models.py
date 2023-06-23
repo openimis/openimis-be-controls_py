@@ -1,4 +1,7 @@
+from django.conf import settings
 from django.db import models
+from graphql import ResolveInfo
+
 
 # Create your models here.
 class Control(models.Model):
