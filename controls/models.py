@@ -5,12 +5,22 @@ from graphql import ResolveInfo
 
 # Create your models here.
 class Control(models.Model):
+    class Adjustability(models.TextChoices):
+        OPTIONAL = 'O', 'Optional'
+        MANDATORY = 'M', 'Mandatory'
+        HIDDEN = 'H', 'Hidden'
+        REQUIRED = 'R', 'Required'
+
     name = models.CharField(db_column='FieldName', primary_key=True, max_length=50)
-    adjustability = models.CharField(db_column='Adjustibility', max_length=1)
+    adjustability = models.CharField(\
+        db_column='Adjustibility', \
+        choices=Adjustability.choices, \
+        default=Adjustability.OPTIONAL, \
+        max_length=1)
     usage = models.CharField(db_column='Usage', max_length=200)
 
     def __str__(self):
-        return f'Field {self.name} ({self.adjustability}) for forms {self.usage}'
+        return f'Field {self.name} ({self.adjustability.label}) for forms {self.usage}'
 
     @classmethod
     def filter_queryset(cls, queryset=None):
@@ -21,11 +31,6 @@ class Control(models.Model):
     @classmethod
     def get_queryset(cls, queryset, user):
         queryset = Control.filter_queryset(queryset)
-        # GraphQL calls with an info object while Rest calls with the user itself
-        if isinstance(user, ResolveInfo):
-            user = user.context.user
-        if settings.ROW_SECURITY and user.is_anonymous:
-            return queryset.filter(name='')
 
         return queryset
 
