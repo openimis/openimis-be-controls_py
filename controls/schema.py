@@ -25,8 +25,6 @@ class Query(graphene.ObjectType):
     )
 
     def resolve_control_str(self, info, **kwargs):
-        # if not info.context.user.has_perms(MedicalConfig.gql_query_diagnosis_perms):
-        #     raise PermissionDenied(_("unauthorized"))
         search_str = kwargs.get('str')
         if search_str is not None:
             return Control.objects \

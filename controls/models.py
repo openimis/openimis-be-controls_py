@@ -2,7 +2,6 @@ from django.conf import settings
 from django.db import models
 from graphql import ResolveInfo
 
-
 # Create your models here.
 class Control(models.Model):
     class Adjustability(models.TextChoices):
@@ -20,7 +19,7 @@ class Control(models.Model):
     usage = models.CharField(db_column='Usage', max_length=200)
 
     def __str__(self):
-        return f'Field {self.name} ({self.adjustability.label}) for forms {self.usage}'
+        return f'Field {self.name} ({self.get_adjustability_display()}) for forms {self.usage}'
 
     @classmethod
     def filter_queryset(cls, queryset=None):
@@ -37,3 +36,4 @@ class Control(models.Model):
     class Meta:
         managed = False
         db_table = 'tblControls'
+        app_label = 'controls'
