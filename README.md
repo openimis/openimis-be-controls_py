@@ -44,7 +44,8 @@ database), install the controls module in it `pip install -e <path to the
 controls module>`, then you can run the tests:
 
 ```bash
-python manage.py test -keep controls
+python manage.py test --keep controls
+```
 
 
 ## ORM mapping
