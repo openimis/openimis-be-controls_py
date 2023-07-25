@@ -7,7 +7,7 @@ class Control(models.Model):
     class Adjustability(models.TextChoices):
         OPTIONAL = 'O', 'Optional'
         MANDATORY = 'M', 'Mandatory'
-        HIDDEN = 'H', 'Hidden'
+        HIDDEN = 'N', 'Hidden'
         REQUIRED = 'R', 'Required'
 
     name = models.CharField(db_column='FieldName', primary_key=True, max_length=50)
