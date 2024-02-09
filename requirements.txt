@@ -1,5 +1,5 @@
-django~=3.2.15
+django
 djangorestframework
 django-filter~=22.1
 openimis-be-core
-graphene-django<3
+graphene-django
