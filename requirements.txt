@@ -1,4 +1,4 @@
-django~=3.2.15
+django~=4.2.10
 djangorestframework
 django-filter~=22.1
 openimis-be-core
