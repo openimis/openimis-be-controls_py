@@ -1,4 +1,4 @@
-from django.db import connection, ProgrammingError, transaction
+from django.db import connection, ProgrammingError, transaction, utils
 from django.test import TestCase, TransactionTestCase
 from django.core.exceptions import ValidationError
 import psycopg2
@@ -32,7 +32,7 @@ class ModelsTestCase(TestCase, TransactionTestCase):
         ]
         for invalid_value in invalid_adjustability_values:
 
-            with self.assertRaises((ValidationError, ProgrammingError, psycopg2.errors.StringDataRightTruncation)) as context:
+            with self.assertRaises((ValidationError, ProgrammingError, psycopg2.errors.StringDataRightTruncation, utils.DataError)) as context:
                 with transaction.atomic():
                     control = Control.objects.create(
                         name=f'{ModelsTestCase.DEFAULT_NAME}_{invalid_value}',
