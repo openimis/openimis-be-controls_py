@@ -1,13 +1,10 @@
-from django.db import connection, ProgrammingError, transaction, utils
-from django.test import TestCase, TransactionTestCase
+from django.test import TestCase
 from django.core.exceptions import ValidationError
-import psycopg2
+
 from controls.models import Control
 
-# Create your tests here.
 
-
-class ModelsTestCase(TestCase, TransactionTestCase):
+class ModelsTestCase(TestCase):
     DEFAULT_NAME = 'a_field'
     DEFAULT_ADJUSTABILITY = Control.Adjustability.OPTIONAL
     DEFAULT_USAGE = 'a_form'
@@ -23,22 +20,20 @@ class ModelsTestCase(TestCase, TransactionTestCase):
         self.assertEqual(control.usage, 'a_form')
         self.assertEqual(str(control), 'Field a_field (Optional) for forms a_form')
 
-    def test_invalid_adjustability(self):
-        invalid_adjustability_values = [
+    def test_unvalid_adjustability(self):
+        unvalid_adjustability_values = [
             'H',
             'Hidden',
             'None',
             'F',
         ]
-        for invalid_value in invalid_adjustability_values:
-
-            with self.assertRaises((ValidationError, ProgrammingError, psycopg2.errors.StringDataRightTruncation, utils.DataError)) as context:
-                with transaction.atomic():
-                    control = Control.objects.create(
-                        name=f'{ModelsTestCase.DEFAULT_NAME}_{invalid_value}',
-                        adjustability=invalid_value,
-                        usage=ModelsTestCase.DEFAULT_USAGE)
-                    control.clean_fields()
+        for unvalid_value in unvalid_adjustability_values:
+            control = Control.objects.create(
+                name=f'{ModelsTestCase.DEFAULT_NAME}_{unvalid_value}',
+                adjustability=unvalid_value,
+                usage=ModelsTestCase.DEFAULT_USAGE)
+            with self.assertRaises(ValidationError) as context:
+                control.clean_fields()
 
         valid_adjustability_values = [
             'O',
