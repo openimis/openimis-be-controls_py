@@ -1,12 +1,11 @@
 import os
 
-from django.test import TestCase
-
 import graphene
+from django.test import TestCase
 from graphene.test import Client
 
-from mobile.models import Control
-from mobile.schema import Query
+from controls.models import Control
+from controls.schema import Query
 
 
 class ModelsTestCase(TestCase):

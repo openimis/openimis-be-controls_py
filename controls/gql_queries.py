@@ -1,8 +1,7 @@
 import graphene
-
-from core import ExtendedConnection
 from graphene_django import DjangoObjectType
 
+from core import ExtendedConnection
 from .models import Control
 
 
