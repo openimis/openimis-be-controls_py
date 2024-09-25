@@ -11,14 +11,14 @@ class ModelsTestCase(TestCase):
 
     def test_basic_creation(self):
         control = Control.objects.create(
-            name=ModelsTestCase.DEFAULT_NAME,
+            name=self.DEFAULT_NAME,
             adjustability=ModelsTestCase.DEFAULT_ADJUSTABILITY,
-            usage=ModelsTestCase.DEFAULT_USAGE)
+            usage=self.DEFAULT_USAGE)
 
-        self.assertEqual(control.name, 'a_field')
+        self.assertEqual(control.name, self.DEFAULT_NAME)
         self.assertEqual(control.adjustability, Control.Adjustability.OPTIONAL)
-        self.assertEqual(control.usage, 'a_form')
-        self.assertEqual(str(control), 'Field a_field (Optional) for forms a_form')
+        self.assertEqual(control.usage, self.DEFAULT_USAGE)
+        self.assertEqual(str(control), 'Field a_field (O) for forms a_form')
 
     def test_invalid_adjustability(self):
         invalid_adjustability_values = [
