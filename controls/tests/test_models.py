@@ -20,17 +20,17 @@ class ModelsTestCase(TestCase):
         self.assertEqual(control.usage, 'a_form')
         self.assertEqual(str(control), 'Field a_field (Optional) for forms a_form')
 
-    def test_unvalid_adjustability(self):
-        unvalid_adjustability_values = [
+    def test_invalid_adjustability(self):
+        invalid_adjustability_values = [
             'H',
             'Hidden',
             'None',
             'F',
         ]
-        for unvalid_value in unvalid_adjustability_values:
+        for invalid_value in invalid_adjustability_values:
             control = Control.objects.create(
-                name=f'{ModelsTestCase.DEFAULT_NAME}_{unvalid_value}',
-                adjustability=unvalid_value,
+                name=f'{ModelsTestCase.DEFAULT_NAME}_{invalid_value}',
+                adjustability=invalid_value,
                 usage=ModelsTestCase.DEFAULT_USAGE)
             with self.assertRaises(ValidationError) as context:
                 control.clean_fields()

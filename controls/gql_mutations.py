@@ -6,18 +6,18 @@ from django.core.exceptions import ValidationError, PermissionDenied
 from django.db import transaction
 from graphene import InputObjectType
 
+from contribution.apps import ContributionConfig
 from contribution.gql_mutations import PremiumBase, update_or_create_premium
 from contribution.models import Premium
-
+from controls.models import MobileEnrollmentMutation as MobileMutationLog
 from core.schema import OpenIMISMutation
+from insuree.apps import InsureeConfig
 from insuree.gql_mutations import FamilyBase, InsureeBase
 from insuree.services import FamilyService, InsureeService
-from controls.models import MobileEnrollmentMutation as MobileMutationLog
+from policy.apps import PolicyConfig
 from policy.gql_mutations import PolicyInputType
 from policy.models import Policy
 from policy.services import PolicyService
-from controls.apps import ControlsConfig
-
 
 logger = logging.getLogger(__name__)
 
@@ -45,16 +45,16 @@ class MobileEnrollmentGQLType:
     premiums = graphene.List(PremiumEnrollmentGQLType, required=True)
 
 
-MOBILE_ENROLLMENT_RIGHTS = [
-    ControlsConfig.gql_mutation_create_families_perms,
-    ControlsConfig.gql_mutation_update_families_perms,
-    ControlsConfig.gql_mutation_create_insurees_perms,
-    ControlsConfig.gql_mutation_update_insurees_perms,
-    ControlsConfig.gql_mutation_create_policies_perms,
-    ControlsConfig.gql_mutation_edit_policies_perms,
-    ControlsConfig.gql_mutation_create_premiums_perms,
-    ControlsConfig.gql_mutation_update_premiums_perms,
-]
+MOBILE_ENROLLMENT_RIGHTS = sum([
+    InsureeConfig.gql_mutation_create_families_perms,
+    InsureeConfig.gql_mutation_update_families_perms,
+    InsureeConfig.gql_mutation_create_insurees_perms,
+    InsureeConfig.gql_mutation_update_insurees_perms,
+    PolicyConfig.gql_mutation_create_policies_perms,
+    PolicyConfig.gql_mutation_edit_policies_perms,
+    ContributionConfig.gql_mutation_create_premiums_perms,
+    ContributionConfig.gql_mutation_update_premiums_perms
+], [])
 
 
 class MobileEnrollmentMutation(OpenIMISMutation):
@@ -71,7 +71,7 @@ class MobileEnrollmentMutation(OpenIMISMutation):
         try:
             if type(user) is AnonymousUser or not user.id:
                 raise ValidationError("mutation.authentication_required")
-            if any(not user.has_perms(right) for right in MOBILE_ENROLLMENT_RIGHTS):
+            if not user.has_perms(MOBILE_ENROLLMENT_RIGHTS, list_evaluation_or=True):
                 raise PermissionDenied("unauthorized")
 
             with transaction.atomic():  # either everything succeeds, or everything fails
@@ -105,7 +105,7 @@ class MobileEnrollmentMutation(OpenIMISMutation):
                     mobile_id = current_policy_data.pop("mobile_id")  # Removing the mobile internal ID
                     add_audit_values(current_policy_data, user.id_for_audit, now)
                     current_policy_data["family_id"] = family.id
-                    
+
                     if "uuid" not in current_policy_data:
                         # It means it's a creation. These fields are added by the CreatePolicyMutation before calling the service
                         current_policy_data["status"] = Policy.STATUS_IDLE
@@ -122,7 +122,8 @@ class MobileEnrollmentMutation(OpenIMISMutation):
                     current_premium_data.pop("policy_uuid", None)
                     current_premium_data["policy_id"] = policy_ids_mapping[mobile_policy_id]
                     current_premium_data["is_offline"] = False
-                    update_or_create_premium(Premium(**current_premium_data), user)  # There is no PremiumService, so we're using directly the function in the gql_mutations file
+                    # There is no PremiumService, so we're using directly the function in the gql_mutations file
+                    update_or_create_premium(Premium(**current_premium_data), user)
 
                 MobileMutationLog.object_mutated(user, client_mutation_id=client_mutation_id, policy=policy)
                 logger.info(f"Mobile enrollment processed successfully!")
@@ -155,6 +156,3 @@ def delete_none(_dict):
                 if isinstance(v_i, dict):
                     delete_none(v_i)
     return _dict
-
-
-
