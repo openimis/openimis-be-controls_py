@@ -21,7 +21,7 @@ class ModelsTestCase(TestCase, TransactionTestCase):
         self.assertEqual(control.name, 'a_field')
         self.assertEqual(control.adjustability, Control.Adjustability.OPTIONAL)
         self.assertEqual(control.usage, 'a_form')
-        self.assertEqual(str(control), 'Field a_field (Optional) for forms a_form')
+        self.assertEqual(str(control), 'Field a_field (O) for forms a_form')
 
     def test_invalid_adjustability(self):
         invalid_adjustability_values = [

@@ -112,5 +112,3 @@ class ModelsTestCase(TestCase):
       len(executed['data']['control']['edges']) )
 
     self.tearDown()
-    
-
