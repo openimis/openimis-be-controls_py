@@ -36,9 +36,9 @@ class ControlsConfig(AppConfig):
     default_auto_field = 'django.db.models.BigAutoField'
     name = MODULE_NAME
 
-    # Droits: constantes, plus surchargeables. Ils ne passent plus par le
-    # DEFAULT_CFG ni par ready(): `ModuleConfiguration.get_or_default` ignore
-    # desormais toute cle `_perms` stockee en base.
+    # Rights: constants, no longer overridable. They go neither through DEFAULT_CFG
+    # nor through ready(): `ModuleConfiguration.get_or_default` now ignores any
+    # `_perms` key stored in the database.
     gql_query_controls_perms = RIGHTS.perms("control", "query")
 
     def ready(self):
