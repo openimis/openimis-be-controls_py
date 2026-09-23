@@ -21,6 +21,21 @@ class Control(models.Model):
         return f'Field {self.name} ({self.adjustability}) for forms {self.usage}'
 
     @classmethod
+    def get_rights(cls, action):
+        """
+        Les droits regissant une action sur un parametrage de champ.
+
+        Ne redeclare rien : la table des droits est `controls.apps.DJANGO_PERMS`, par
+        entite puis par action, et `configured_perms` y lit la valeur *configuree* -
+        celle que ModuleConfiguration a pu surcharger - et non le defaut declare. Ce
+        modele n'est que le point d'acces. Renvoie None pour une action non declaree,
+        pour que l'appelant echoue ferme.
+        """
+        from controls.apps import configured_perms
+
+        return configured_perms("control", action)
+
+    @classmethod
     def filter_queryset(cls, queryset=None):
         if queryset is None:
             queryset = cls.objects.all()

@@ -45,6 +45,18 @@ class MobileEnrollmentGQLType:
     premiums = graphene.List(PremiumEnrollmentGQLType, required=True)
 
 
+# Emprunt : aucun de ces 8 droits n'appartient a `controls`. Leur source de verite est
+# le `DJANGO_PERMS` de leur propre module - insuree, policy, contribution - et c'est la
+# qu'il faut les changer ; ils ne sont donc volontairement pas declares dans
+# `controls.apps.DJANGO_PERMS`. L'enrolement mobile est une transaction unique qui ecrit
+# dans les trois modules, et la liste est lue ici a l'import : ces attributs de config
+# sont des constantes de classe depuis la deconfiguration des droits, donc la valeur est
+# deja bonne a l'import, mais une surcharge ModuleConfiguration posee en `ready()` ne
+# serait pas vue.
+#
+# `list_evaluation_or=True` ci-dessous : detenir *un seul* de ces 8 droits suffit a
+# creer famille + assures + polices + cotisations. C'est un OU la ou la mutation exige
+# de fait les 8 pouvoirs ; le resserrer change la semantique et releve d'un autre lot.
 MOBILE_ENROLLMENT_RIGHTS = sum([
     InsureeConfig.gql_mutation_create_families_perms,
     InsureeConfig.gql_mutation_update_families_perms,
