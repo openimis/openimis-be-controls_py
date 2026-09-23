@@ -23,13 +23,13 @@ class Control(models.Model):
     @classmethod
     def get_rights(cls, action):
         """
-        Les droits regissant une action sur un parametrage de champ.
+        The rights governing an action on a field setting.
 
-        Ne redeclare rien : la table des droits est `controls.apps.DJANGO_PERMS`, par
-        entite puis par action, et `configured_perms` y lit la valeur *configuree* -
-        celle que ModuleConfiguration a pu surcharger - et non le defaut declare. Ce
-        modele n'est que le point d'acces. Renvoie None pour une action non declaree,
-        pour que l'appelant echoue ferme.
+        Redeclares nothing: the rights table is `controls.apps.DJANGO_PERMS`, by
+        entity then by action, and `configured_perms` reads the *configured* value
+        there - the one ModuleConfiguration may have overridden - and not the declared
+        default. This model is only the access point. Returns None for an undeclared
+        action, so that the caller fails closed.
         """
         from controls.apps import configured_perms
 

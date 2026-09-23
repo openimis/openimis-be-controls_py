@@ -5,12 +5,12 @@ from core.rights_declaration import RightsDeclaration
 MODULE_NAME = "controls"
 
 
-# Droits, par entite puis par action. Le module n'a qu'une entite, `control` - le
-# parametrage des champs de formulaire - et qu'une action, la lecture : rien ici ne
-# s'ecrit par GraphQL, `tblControls` est alimentee par l'administration.
-# 211001 : premier droit de ce module, dans un bloc neuf. `control` et `control_str`
-# n'exigeaient rien, pas meme l'authentification. Donnees de reference de faible
-# sensibilite, mais rien ne justifiait l'acces anonyme.
+# Rights, by entity then by action. The module has only one entity, `control` - the
+# form field settings - and a single action, reading: nothing here is written through
+# GraphQL, `tblControls` being filled by the administration.
+# 211001: the first right of this module, in a fresh block. `control` and `control_str`
+# required nothing, not even authentication. Low-sensitivity reference data, but
+# nothing justified anonymous access.
 DJANGO_PERMS = {
     "control": {
         "query": ("controls.view_control", 211001),

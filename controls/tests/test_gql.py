@@ -10,12 +10,12 @@ from controls.models import Control
 from controls.schema import Query
 
 
-# `Query.control` exige desormais un droit, comme son jumeau `control_str` : le champ
-# etait le seul point d'entree du module sans controle. Ces tests appelaient
-# `client.execute(...)` sans contexte du tout - ils ne passaient que grace a cette
-# absence de garde. `Query._check_permissions` ne lit que `user.id` et
-# `user.has_perms`, d'ou ce doublure minimal plutot qu'un utilisateur complet (les
-# reglages de test du module n'installent que `controls`).
+# `Query.control` now requires a right, like its twin `control_str`: the field was the
+# module's only entry point with no check. These tests called `client.execute(...)`
+# with no context at all - they only passed thanks to that missing guard.
+# `Query._check_permissions` reads nothing but `user.id` and `user.has_perms`, hence
+# this minimal stand-in rather than a full user (the module's test settings install
+# `controls` only).
 class _StubUser:
   def __init__(self, granted=True):
     self.id = 1
@@ -138,7 +138,7 @@ class ModelsTestCase(TestCase):
     self.tearDown()
 
   def test_query_without_the_right_is_refused(self):
-    """Le champ `control` etait expose sans aucun droit : il ne doit plus l'etre."""
+    """The `control` field was exposed with no right at all: no longer."""
     client = Client(self.control_schema)
     executed = client.execute(self.query, context=UNAUTHORIZED)
     self.assertIn('errors', executed)

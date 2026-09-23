@@ -17,11 +17,11 @@ class Query(graphene.ObjectType):
         str=graphene.String()
     )
 
-    # `control` n'avait aucun resolver, et `ControlGQLType` n'a ni `get_queryset` ni
-    # `ScopedQuerysetMixin` : le `Control.get_queryset` du modele n'etait donc jamais
-    # appele non plus. Le parametrage des formulaires etait lisible sans aucun droit,
-    # y compris anonymement, alors que son jumeau `control_str` est garde juste en
-    # dessous. Meme controle pour les deux.
+    # `control` had no resolver at all, and `ControlGQLType` has neither
+    # `get_queryset` nor `ScopedQuerysetMixin`: so the model's `Control.get_queryset`
+    # was never called either. The form settings were readable with no right at all,
+    # anonymously included, while their twin `control_str` is guarded just below. Same
+    # check for both.
     def resolve_control(self, info, **kwargs):
         Query._check_permissions(info.context.user)
         return Control.objects.all()

@@ -1,18 +1,18 @@
 """
-Garde-fous sur la declaration des droits de `controls`.
+Guard rails on `controls`' rights declaration.
 
-Meme structure que `core` et `claim` : `DJANGO_PERMS` par entite puis par action,
-`_PERM_CFG` qui en derive les cles de config, et `Control.get_rights` qui n'est qu'un
-point d'acces.
+Same structure as `core` and `claim`: `DJANGO_PERMS` by entity then by action,
+`_PERM_CFG` deriving the config keys from it, and `Control.get_rights` which is only an
+access point.
 
-Ce que ces tests protegent est silencieux plutot que bruyant :
-  * `has_perms([])` renvoie True, donc une liste de droits vide n'interdit rien : elle
-    accorde la lecture du parametrage a tout le monde, y compris anonymement - ce qui
-    etait exactement l'etat de `control` et `control_str` avant 211001 ;
-  * une cle de config sans attribut de classe n'est jamais chargee par `_load_config`
-    et sa lecture leve AttributeError - le droit devient inapplicable ;
-  * l'entier est ce que porte un role (`RoleRight.right_id`) : en changer un revoque
-    l'acces de tous les roles qui le detiennent.
+What these tests protect against is silent rather than loud:
+  * `has_perms([])` returns True, so an empty rights list forbids nothing: it grants
+    reading the settings to everybody, anonymously included - which is exactly the
+    state `control` and `control_str` were in before 211001;
+  * a config key with no class attribute is never loaded by `_load_config` and reading
+    it raises AttributeError - the right becomes unenforceable;
+  * the integer is what a role carries (`RoleRight.right_id`): changing one revokes
+    access for every role that holds it.
 """
 
 import json
@@ -38,8 +38,8 @@ EXPECTED_RIGHTS = {
     "gql_query_controls_perms": ["211001"],
 }
 
-# Le catalogue de l'assemblage, pas celui du paquet : les modules sont installes depuis
-# un arbre separe, donc il se resout depuis BASE_DIR.
+# The assembly's catalogue, not the package's: the modules are installed from a
+# separate tree, so it is resolved from BASE_DIR.
 PERMISSIONS_MAP = Path(settings.BASE_DIR) / "permissions_map.json"
 
 
@@ -86,8 +86,8 @@ class ControlsPermissionDeclarationTestCase(TestCase):
 
     def test_crud_django_names_match_the_real_model(self):
         """
-        Le nom `query` doit etre celui que django genere au post_migrate
-        (`<app_label>.view_<model>`), sinon il ne pourra jamais etre accorde.
+        The `query` name has to be the one django generates at post_migrate
+        (`<app_label>.view_<model>`), otherwise it can never be granted.
         """
         model = django_apps.get_model("controls", "Control")
         self.assertEqual(
@@ -97,8 +97,8 @@ class ControlsPermissionDeclarationTestCase(TestCase):
 
     def test_every_declared_right_id_is_in_the_permissions_map(self):
         """
-        La carte est ce depuis quoi le solution builder seme les roles : un identifiant
-        absent ne peut etre accorde a personne.
+        The map is what the solution builder seeds the roles from: a missing identifier
+        can be granted to nobody.
         """
         catalog = set(json.loads(PERMISSIONS_MAP.read_text(encoding="utf-8")).values())
         missing = sorted(

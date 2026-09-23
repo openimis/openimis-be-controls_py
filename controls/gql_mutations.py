@@ -45,18 +45,19 @@ class MobileEnrollmentGQLType:
     premiums = graphene.List(PremiumEnrollmentGQLType, required=True)
 
 
-# Emprunt : aucun de ces 8 droits n'appartient a `controls`. Leur source de verite est
-# le `DJANGO_PERMS` de leur propre module - insuree, policy, contribution - et c'est la
-# qu'il faut les changer ; ils ne sont donc volontairement pas declares dans
-# `controls.apps.DJANGO_PERMS`. L'enrolement mobile est une transaction unique qui ecrit
-# dans les trois modules, et la liste est lue ici a l'import : ces attributs de config
-# sont des constantes de classe depuis la deconfiguration des droits, donc la valeur est
-# deja bonne a l'import, mais une surcharge ModuleConfiguration posee en `ready()` ne
-# serait pas vue.
+# A borrowing: none of these 8 rights belongs to `controls`. Their source of truth is
+# the `DJANGO_PERMS` of their own module - insuree, policy, contribution - and that is
+# where they have to be changed; they are therefore deliberately not declared in
+# `controls.apps.DJANGO_PERMS`. Mobile enrolment is a single transaction writing into
+# all three modules, and the list is read here at import time: these config attributes
+# have been class constants since the rights were deconfigured, so the value is already
+# right at import, but a ModuleConfiguration override laid down in `ready()` would not
+# be seen.
 #
-# `list_evaluation_or=True` ci-dessous : detenir *un seul* de ces 8 droits suffit a
-# creer famille + assures + polices + cotisations. C'est un OU la ou la mutation exige
-# de fait les 8 pouvoirs ; le resserrer change la semantique et releve d'un autre lot.
+# `list_evaluation_or=True` below: holding *a single one* of these 8 rights is enough to
+# create family + insurees + policies + contributions. That is an OR where the mutation
+# in fact requires all 8 powers; tightening it changes the semantics and belongs to
+# another batch of work.
 MOBILE_ENROLLMENT_RIGHTS = sum([
     InsureeConfig.gql_mutation_create_families_perms,
     InsureeConfig.gql_mutation_update_families_perms,
