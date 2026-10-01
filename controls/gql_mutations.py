@@ -45,6 +45,19 @@ class MobileEnrollmentGQLType:
     premiums = graphene.List(PremiumEnrollmentGQLType, required=True)
 
 
+# A borrowing: none of these 8 rights belongs to `controls`. Their source of truth is
+# the `DJANGO_PERMS` of their own module - insuree, policy, contribution - and that is
+# where they have to be changed; they are therefore deliberately not declared in
+# `controls.apps.DJANGO_PERMS`. Mobile enrolment is a single transaction writing into
+# all three modules, and the list is read here at import time: these config attributes
+# have been class constants since the rights were deconfigured, so the value is already
+# right at import, but a ModuleConfiguration override laid down in `ready()` would not
+# be seen.
+#
+# `list_evaluation_or=True` below: holding *a single one* of these 8 rights is enough to
+# create family + insurees + policies + contributions. That is an OR where the mutation
+# in fact requires all 8 powers; tightening it changes the semantics and belongs to
+# another batch of work.
 MOBILE_ENROLLMENT_RIGHTS = sum([
     InsureeConfig.gql_mutation_create_families_perms,
     InsureeConfig.gql_mutation_update_families_perms,
