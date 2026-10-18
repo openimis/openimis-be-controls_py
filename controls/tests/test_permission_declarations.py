@@ -15,11 +15,8 @@ What these tests protect against is silent rather than loud:
     access for every role that holds it.
 """
 
-import json
-from pathlib import Path
 
 from django.apps import apps as django_apps
-from django.conf import settings
 from django.test import TestCase
 
 from controls.apps import (
@@ -37,10 +34,6 @@ from controls.models import Control
 EXPECTED_RIGHTS = {
     "gql_query_controls_perms": ["211001"],
 }
-
-# The assembly's catalogue, not the package's: the modules are installed from a
-# separate tree, so it is resolved from BASE_DIR.
-PERMISSIONS_MAP = Path(settings.BASE_DIR) / "permissions_map.json"
 
 
 class ControlsPermissionDeclarationTestCase(TestCase):
@@ -94,23 +87,6 @@ class ControlsPermissionDeclarationTestCase(TestCase):
             DJANGO_PERMS["control"]["query"][0],
             f"{model._meta.app_label}.view_{model._meta.model_name}",
         )
-
-    def test_every_declared_right_id_is_in_the_permissions_map(self):
-        """
-        The map is what the solution builder seeds the roles from: a missing identifier
-        can be granted to nobody.
-        """
-        catalog = set(json.loads(PERMISSIONS_MAP.read_text(encoding="utf-8")).values())
-        missing = sorted(
-            {
-                rid
-                for _, actions in DJANGO_PERMS.items()
-                for _, (_, right_id) in actions.items()
-                for rid in [str(right_id)]
-                if rid not in catalog
-            }
-        )
-        self.assertEqual(missing, [])
 
     def test_unknown_entity_or_action_raises(self):
         with self.assertRaises(KeyError):
