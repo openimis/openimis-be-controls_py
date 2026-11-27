@@ -1,5 +1,5 @@
 django
 djangorestframework
-django-filter~=22.1
+django-filter
 openimis-be-core
 graphene-django
